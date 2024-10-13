@@ -1,9 +1,8 @@
-tensorflow
 nltk
 colorama
-numpy
-scikit_learn
 Flask
-streamlit
-pickle5
-pillow
+streamlit==1.26.0
+numpy==1.24.3
+tensorflow==2.14.0
+scikit-learn==1.2.2
+pillow==9.4.0
