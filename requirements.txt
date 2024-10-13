@@ -1,0 +1,9 @@
+tensorflow
+nltk
+colorama
+numpy
+scikit_learn
+Flask
+streamlit
+localtunnel
+PyDrive
