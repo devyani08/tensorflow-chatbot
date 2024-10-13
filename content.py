@@ -68,13 +68,13 @@ history = model.fit(padded_sequences, np.array(training_labels), epochs=epochs)
 # Save the model
 model.save("chat_model.keras")
 
-# Save the tokenizer and label encoder
-with open('tokenizer.pickle', 'wb') as handle:
-    pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# # Save the tokenizer and label encoder
+# with open('tokenizer.pickle', 'wb') as handle:
+#     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-with open('label_encoder.pickle', 'wb') as enc_file:
-    pickle.dump(lbl_encoder, enc_file, protocol=pickle.HIGHEST_PROTOCOL)
+# with open('label_encoder.pickle', 'wb') as enc_file:
+#     pickle.dump(lbl_encoder, enc_file, protocol=pickle.HIGHEST_PROTOCOL)
 
-# Save the responses
-with open('responses.pickle', 'wb') as resp_file:
-    pickle.dump(responses, resp_file, protocol=pickle.HIGHEST_PROTOCOL)
+# # Save the responses
+# with open('responses.pickle', 'wb') as resp_file:
+#     pickle.dump(responses, resp_file, protocol=pickle.HIGHEST_PROTOCOL)
