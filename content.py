@@ -7,36 +7,35 @@ from tensorflow.keras.layers import Dense, Embedding, GlobalAveragePooling1D
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import LabelEncoder
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from google.colab import auth
-from oauth2client.client import GoogleCredentials
-from pyngrok import ngrok
+import pickle
 
+# Load the intents file
 with open('intents.json') as file:
     data = json.load(file)
 
 training_sentences = []
 training_labels = []
 labels = []
-responses = []
-
+responses = {}
 
 for intent in data['intents']:
     for pattern in intent['patterns']:
         training_sentences.append(pattern)
         training_labels.append(intent['tag'])
-    responses.append(intent['responses'])
+    # Store responses in a dictionary with the tag as the key
+    responses[intent['tag']] = intent['responses']
 
     if intent['tag'] not in labels:
         labels.append(intent['tag'])
 
 num_classes = len(labels)
 
+# Encode the labels
 lbl_encoder = LabelEncoder()
 lbl_encoder.fit(training_labels)
 training_labels = lbl_encoder.transform(training_labels)
 
+# Tokenize the sentences
 vocab_size = 1000
 embedding_dim = 16
 max_len = 20
@@ -48,8 +47,7 @@ word_index = tokenizer.word_index
 sequences = tokenizer.texts_to_sequences(training_sentences)
 padded_sequences = pad_sequences(sequences, truncating='post', maxlen=max_len)
 
-
-
+# Build the model
 model = Sequential()
 model.add(Embedding(vocab_size, embedding_dim, input_length=max_len))
 model.add(GlobalAveragePooling1D())
@@ -57,23 +55,26 @@ model.add(Dense(16, activation='relu'))
 model.add(Dense(16, activation='relu'))
 model.add(Dense(num_classes, activation='softmax'))
 
+# Compile the model
 model.compile(loss='sparse_categorical_crossentropy',
               optimizer='adam', metrics=['accuracy'])
 
 model.summary()
+
+# Train the model
 epochs = 500
 history = model.fit(padded_sequences, np.array(training_labels), epochs=epochs)
 
-# to save the trained model
+# Save the model
 model.save("chat_model.keras")
-# model.export("chat_model")
 
-import pickle
-
-# to save the fitted tokenizer
+# Save the tokenizer and label encoder
 with open('tokenizer.pickle', 'wb') as handle:
     pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-# to save the fitted label encoder
-with open('label_encoder.pickle', 'wb') as ecn_file:
-    pickle.dump(lbl_encoder, ecn_file, protocol=pickle.HIGHEST_PROTOCOL)
+with open('label_encoder.pickle', 'wb') as enc_file:
+    pickle.dump(lbl_encoder, enc_file, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Save the responses
+with open('responses.pickle', 'wb') as resp_file:
+    pickle.dump(responses, resp_file, protocol=pickle.HIGHEST_PROTOCOL)
